@@ -9,7 +9,7 @@ import LoginPage from "./containers/login-page";
 import SignupPage from "./containers/signup-page";
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/:id",
     element: <HomePage />,
   },
   {
