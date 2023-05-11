@@ -37,15 +37,15 @@ const HomePage = () => {
     };
   }, []);
 
-
-
   const handleClick = (e) => {
     e.preventDefault();
-    console.log(messages)
-    setMessages(messages => [...messages, { id: id, message: { image: user.picture, text: value, sender: user.name } }])
 
-    socket.emit('send-message', { id: id, message: { image: user.picture, text: value, sender: user.name } });
-    setValue('');
+    if (value != 0) {
+      setMessages(messages => [...messages, { id: id, message: { image: user.picture, text: value, sender: user.name } }])
+
+      socket.emit('send-message', { id: id, message: { image: user.picture, text: value, sender: user.name } });
+      setValue('');
+    }
   }
 
   const handleChange = (e) => {
@@ -53,7 +53,7 @@ const HomePage = () => {
   }
 
   // Login Auth Method
-
+  const { loginWithRedirect } = useAuth0();
   const { user, isAuthenticated, isLoading } = useAuth0();
   const { logout } = useAuth0();
 
@@ -62,13 +62,26 @@ const HomePage = () => {
   }
 
   if ( !isAuthenticated ) {
-    return( <Navigate to="/login" />)
+    loginWithRedirect()
+    // return( <Navigate to="/login" />)
   }
 
-  console.log(user)
+  const addActivity = () => {
+    return ( 
+    <div className="activity-container">
+      <form action="post">
+        <label htmlFor="acitivty-title">Title</label>
+          <input type="text" name='activity-title'/>
+        <label htmlFor="activity-text"></label>
+          <input type="text" name='activity-text'/>
+          <input type="submit" />
+      </form>
+    </div>
+    )
+  }
 
   return (
-    <div>
+    <div className="home-page">
       { isAuthenticated && (
       <div>
         <img src={user.picture} alt={user.name} />
@@ -80,7 +93,7 @@ const HomePage = () => {
       Log Out
       </button>
 
-      <div className="">{
+      <div className="chat-container">{
         !messages.length ? <div>no messages</div> : messages.map((message, i) => 
         <>
           <img src={message.message.image} alt={message.message.sender} />
@@ -92,7 +105,9 @@ const HomePage = () => {
         <input type="text" value={value} onChange={handleChange} />
         <button onClick={handleClick}>Send</button>
       </form>
-      
+      <button onClick={() => addActivity()}>
+        Add Activity
+      </button>
     </div>
   )
 }
